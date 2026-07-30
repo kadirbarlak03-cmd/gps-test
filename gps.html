@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GPS Koordinatlar&#305; Al</title>
+  <title>GPS Koordinatları Al</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -99,37 +99,37 @@
 </head>
 <body>
   <div class="card">
-    <h1>&#128205; GPS Koordinatlar&#305;</h1>
-    <p class="subtitle">Konum otomatik al&#305;n&#305;yor�</p>
+    <h1>📍 GPS Koordinatları</h1>
+    <p class="subtitle">Konum otomatik alınıyor…</p>
 
-    <div class="status" id="status">Konum isteniyor�</div>
+    <div class="status" id="status">Konum isteniyor…</div>
 
     <div class="result" id="result">
       <div class="row">
         <span class="label">Latitude</span>
-        <span class="value" id="lat">�</span>
+        <span class="value" id="lat">—</span>
       </div>
       <div class="row">
         <span class="label">Longitude</span>
-        <span class="value" id="lng">�</span>
+        <span class="value" id="lng">—</span>
       </div>
       <div class="row">
-        <span class="label">Do&#287;ruluk</span>
-        <span class="value" id="acc">�</span>
+        <span class="label">Doğruluk</span>
+        <span class="value" id="acc">—</span>
       </div>
       <div class="row">
-        <span class="label">&#304;rtifa</span>
-        <span class="value" id="alt">�</span>
+        <span class="label">İrtifa</span>
+        <span class="value" id="alt">—</span>
       </div>
       <div class="row">
-        <span class="label">H&#305;z</span>
-        <span class="value" id="spd">�</span>
+        <span class="label">Hız</span>
+        <span class="value" id="spd">—</span>
       </div>
       <div class="row">
-        <span class="label">Y�n</span>
-        <span class="value" id="hdg">�</span>
+        <span class="label">Yön</span>
+        <span class="value" id="hdg">—</span>
       </div>
-      <button class="copy-btn" onclick="copyCoords()">Koordinatlar&#305; Kopyala</button>
+      <button class="copy-btn" onclick="copyCoords()">Koordinatları Kopyala</button>
     </div>
 
     <div class="error" id="error"></div>
@@ -144,11 +144,11 @@
 
     function getCoordinates() {
       if (!navigator.geolocation) {
-        showError('Taray&#305;c&#305;n&#305;z konum servisini desteklemiyor.');
+        showError('Tarayıcınız konum servisini desteklemiyor.');
         return;
       }
 
-      status.textContent = 'Konum al&#305;n&#305;yor�';
+      status.textContent = 'Konum alınıyor…';
       result.classList.remove('show');
       errorBox.classList.remove('show');
       retryBtn.classList.remove('show');
@@ -158,19 +158,19 @@
           const c = pos.coords;
           document.getElementById('lat').textContent = c.latitude.toFixed(6);
           document.getElementById('lng').textContent = c.longitude.toFixed(6);
-          document.getElementById('acc').textContent = c.accuracy ? Math.round(c.accuracy) + ' m' : '�';
-          document.getElementById('alt').textContent = c.altitude != null ? c.altitude.toFixed(1) + ' m' : '�';
-          document.getElementById('spd').textContent = c.speed != null ? (c.speed * 3.6).toFixed(1) + ' km/h' : '�';
-          document.getElementById('hdg').textContent = c.heading != null ? Math.round(c.heading) + '�' : '�';
+          document.getElementById('acc').textContent = c.accuracy ? Math.round(c.accuracy) + ' m' : '—';
+          document.getElementById('alt').textContent = c.altitude != null ? c.altitude.toFixed(1) + ' m' : '—';
+          document.getElementById('spd').textContent = c.speed != null ? (c.speed * 3.6).toFixed(1) + ' km/h' : '—';
+          document.getElementById('hdg').textContent = c.heading != null ? Math.round(c.heading) + '°' : '—';
 
           result.classList.add('show');
-          status.textContent = 'Ba&#351;ar&#305;l&#305;';
+          status.textContent = 'Başarılı';
         },
         (err) => {
-          let msg = 'Konum al&#305;namad&#305;.';
-          if (err.code === 1) msg = 'Konum izni reddedildi. Taray&#305;c&#305; ayarlar&#305;ndan izin verin.';
-          if (err.code === 2) msg = 'Konum bilgisi al&#305;namad&#305; (sinyal yok).';
-          if (err.code === 3) msg = 'Zaman a&#351;&#305;m&#305;. Tekrar deneyin.';
+          let msg = 'Konum alınamadı.';
+          if (err.code === 1) msg = 'Konum izni reddedildi. Tarayıcı ayarlarından izin verin.';
+          if (err.code === 2) msg = 'Konum bilgisi alınamadı (sinyal yok).';
+          if (err.code === 3) msg = 'Zaman aşımı. Tekrar deneyin.';
           showError(msg);
           status.textContent = '';
           retryBtn.classList.add('show');
@@ -193,12 +193,12 @@
       const lng = document.getElementById('lng').textContent;
       const text = `${lat}, ${lng}`;
       navigator.clipboard.writeText(text).then(() => {
-        status.textContent = 'Koordinatlar panoya kopyaland&#305;!';
-        setTimeout(() => status.textContent = 'Ba&#351;ar&#305;l&#305;', 2000);
+        status.textContent = 'Koordinatlar panoya kopyalandı!';
+        setTimeout(() => status.textContent = 'Başarılı', 2000);
       });
     }
 
-    // Sayfa y�klenir y�klenmez otomatik ba&#351;lat
+    // Sayfa yüklenir yüklenmez otomatik başlat
     getCoordinates();
   </script>
 </body>
