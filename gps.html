@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPS Koordinatlar&#305; Al</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+    .status {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .result {
+      display: none;
+    }
+    .result.show { display: block; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #334155;
+      font-size: 0.95rem;
+    }
+    .row:last-of-type { border-bottom: none; }
+    .label { color: #94a3b8; }
+    .value { font-weight: 600; font-family: monospace; }
+    .error {
+      margin-top: 16px;
+      padding: 12px;
+      background: #7f1d1d;
+      border-radius: 8px;
+      color: #fecaca;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .error.show { display: block; }
+    .copy-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #10b981;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: #059669; }
+    .retry-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: none;
+    }
+    .retry-btn.show { display: block; }
+    .retry-btn:hover { background: #2563eb; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>&#128205; GPS Koordinatlar&#305;</h1>
+    <p class="subtitle">Konum otomatik al&#305;n&#305;yor…</p>
+
+    <div class="status" id="status">Konum isteniyor…</div>
+
+    <div class="result" id="result">
+      <div class="row">
+        <span class="label">Latitude</span>
+        <span class="value" id="lat">—</span>
+      </div>
+      <div class="row">
+        <span class="label">Longitude</span>
+        <span class="value" id="lng">—</span>
+      </div>
+      <div class="row">
+        <span class="label">Do&#287;ruluk</span>
+        <span class="value" id="acc">—</span>
+      </div>
+      <div class="row">
+        <span class="label">&#304;rtifa</span>
+        <span class="value" id="alt">—</span>
+      </div>
+      <div class="row">
+        <span class="label">H&#305;z</span>
+        <span class="value" id="spd">—</span>
+      </div>
+      <div class="row">
+        <span class="label">Yön</span>
+        <span class="value" id="hdg">—</span>
+      </div>
+      <button class="copy-btn" onclick="copyCoords()">Koordinatlar&#305; Kopyala</button>
+    </div>
+
+    <div class="error" id="error"></div>
+    <button class="retry-btn" id="retryBtn" onclick="getCoordinates()">Tekrar Dene</button>
+  </div>
+
+  <script>
+    const status = document.getElementById('status');
+    const result = document.getElementById('result');
+    const errorBox = document.getElementById('error');
+    const retryBtn = document.getElementById('retryBtn');
+
+    function getCoordinates() {
+      if (!navigator.geolocation) {
+        showError('Taray&#305;c&#305;n&#305;z konum servisini desteklemiyor.');
+        return;
+      }
+
+      status.textContent = 'Konum al&#305;n&#305;yor…';
+      result.classList.remove('show');
+      errorBox.classList.remove('show');
+      retryBtn.classList.remove('show');
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const c = pos.coords;
+          document.getElementById('lat').textContent = c.latitude.toFixed(6);
+          document.getElementById('lng').textContent = c.longitude.toFixed(6);
+          document.getElementById('acc').textContent = c.accuracy ? Math.round(c.accuracy) + ' m' : '—';
+          document.getElementById('alt').textContent = c.altitude != null ? c.altitude.toFixed(1) + ' m' : '—';
+          document.getElementById('spd').textContent = c.speed != null ? (c.speed * 3.6).toFixed(1) + ' km/h' : '—';
+          document.getElementById('hdg').textContent = c.heading != null ? Math.round(c.heading) + '°' : '—';
+
+          result.classList.add('show');
+          status.textContent = 'Ba&#351;ar&#305;l&#305;';
+        },
+        (err) => {
+          let msg = 'Konum al&#305;namad&#305;.';
+          if (err.code === 1) msg = 'Konum izni reddedildi. Taray&#305;c&#305; ayarlar&#305;ndan izin verin.';
+          if (err.code === 2) msg = 'Konum bilgisi al&#305;namad&#305; (sinyal yok).';
+          if (err.code === 3) msg = 'Zaman a&#351;&#305;m&#305;. Tekrar deneyin.';
+          showError(msg);
+          status.textContent = '';
+          retryBtn.classList.add('show');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.classList.add('show');
+    }
+
+    function copyCoords() {
+      const lat = document.getElementById('lat').textContent;
+      const lng = document.getElementById('lng').textContent;
+      const text = `${lat}, ${lng}`;
+      navigator.clipboard.writeText(text).then(() => {
+        status.textContent = 'Koordinatlar panoya kopyaland&#305;!';
+        setTimeout(() => status.textContent = 'Ba&#351;ar&#305;l&#305;', 2000);
+      });
+    }
+
+    // Sayfa yüklenir yüklenmez otomatik ba&#351;lat
+    getCoordinates();
+  </script>
+</body>
+</html>
